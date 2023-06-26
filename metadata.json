@@ -1,11 +1,11 @@
 {
-  "name": "example42-network",
+  "name": "c2devel-network",
   "version": "3.5.3",
-  "source": "https://github.com/example42/puppet-network",
   "author": "Alessandro Franceschi",
-  "summary": "Example42 Network Module",
+  "summary": "Fork of deprecated Example42 Network Module",
   "license": "Apache-2.0",
-  "project_page": "https://github.com/example42/puppet-network",
+  "source": "https://github.com/c2devel/puppet-network",
+  "project_page": "https://github.com/c2devel/puppet-network",
   "dependencies": [
     {
       "name": "puppetlabs/stdlib",

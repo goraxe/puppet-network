@@ -1,6 +1,6 @@
 # network
 
-[![Build Status](https://travis-ci.org/example42/puppet-network.png?branch=master)](https://travis-ci.org/example42/puppet-network)
+This repository is a fork of deprecated https://github.com/example42/puppet-network repo.
 
 #### Table of Contents
 
