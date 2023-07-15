@@ -40,7 +40,6 @@
 # [*mode*]
 # [*owner*]
 # [*group*]
-# [*replace*]
 #   String. Optional. Default: undef
 #   All these parameters map directly to the created file attributes.
 #   If not defined the module's defaults are used.
@@ -73,39 +72,37 @@
 #
 define network::conf (
 
-  $source       = undef,
-  $template     = undef,
-  $content      = undef,
+  Optional[String] $source       = undef,
+  Optional[String] $template     = undef,
+  Optional[String] $content      = undef,
 
-  $path         = undef,
-  $mode         = undef,
-  $owner        = undef,
-  $group        = undef,
+  Optional[String] $path         = undef,
+  Optional[Stdlib::Filemode] $mode         = undef,
+  Optional[String] $owner        = undef,
+  Optional[String] $group        = undef,
 
-  $config_file_notify  = 'class_default',
-  $config_file_require = undef,
+  Variant[String,Boolean] $config_file_notify  = 'class_default',
+  Variant[String,Boolean] $config_file_require = undef,
 
-  $options_hash = undef,
+  Optional[Hash] $options_hash = undef,
 
-  $ensure       = present ) {
+  Enum['absent','present'] $ensure = present
+) {
+  include network
 
-  validate_re($ensure, ['present','absent'], 'Valid values are: present, absent. WARNING: If set to absent the conf file is removed.')
-
-  include ::network
-
-  $manage_path    = pick($path, "${::network::config_dir_path}/${name}")
-  $manage_mode    = pick($mode, $::network::config_file_mode)
-  $manage_owner   = pick($owner, $::network::config_file_owner)
-  $manage_group   = pick($group, $::network::config_file_group)
+  $manage_path    = pick($path, "${network::config_dir_path}/${name}")
+  $manage_mode    = pick($mode, $network::config_file_mode)
+  $manage_owner   = pick($owner, $network::config_file_owner)
+  $manage_group   = pick($group, $network::config_file_group)
   $manage_require = $config_file_require ? {
-    'class_default' => $::network::manage_config_file_require,
-    true            => $::network::manage_config_file_require,
+    'class_default' => $network::manage_config_file_require,
+    true            => $network::manage_config_file_require,
     false           => undef,
     default         => $config_file_require,
   }
   $manage_notify  = $config_file_notify ? {
-    'class_default' => $::network::manage_config_file_notify,
-    true            => $::network::manage_config_file_notify,
+    'class_default' => $network::manage_config_file_notify,
+    true            => $network::manage_config_file_notify,
     false           => undef,
     default         => $config_file_notify,
   }
@@ -116,7 +113,6 @@ define network::conf (
     },
     default => $content,
   }
-
 
   file { "network_conf_${name}":
     ensure  => $ensure,
@@ -129,6 +125,4 @@ define network::conf (
     require => $manage_require,
     notify  => $manage_notify,
   }
-
 }
-

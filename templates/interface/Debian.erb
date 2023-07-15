@@ -60,8 +60,8 @@ allow-hotplug <%= @interface %>
 <% if @server -%>
     server <%= @server %>
 <% end -%>
-<% if @mode -%>
-    mode <%= @mode %>
+<% if @tunnel_mode -%>
+    mode <%= @tunnel_mode %>
 <% end -%>
 <% if @endpoint -%>
     endpoint <%= @endpoint %>
