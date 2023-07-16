@@ -103,61 +103,28 @@
 # Copyright (C) 2011 Mike Arnold, unless otherwise noted.
 #
 define network::route (
-  $ipaddress,
-  $netmask,
-  $gateway   = undef,
-  $metric    = undef,
-  $mtu       = undef,
-  $scope     = undef,
-  $source    = undef,
-  $table     = undef,
-  $cidr      = undef,
-  $family    = [ 'inet4' ],
-  $interface = $name,
-  $ensure    = 'present'
+  Array[Stdlib::IP::Address] $ipaddress,
+  Array[Stdlib::IP::Address] $netmask,
+  Optional[Array[[Stdlib::IP::Address]]] $gateway   = undef,
+  Optional[Array[Integer]] $metric    = undef,
+  Optional[Array[Integer]] $mtu       = undef,
+  Optional[Array[String]] $scope     = undef,
+  Optional[Array[String]] $source    = undef,
+  Optional[Array[String]] $table     = undef,
+  Optional[Array[Integer]] $cidr      = undef,
+  Array[String] $family    = ['inet4'],
+  String $interface = $name,
+  Enum['absent','present'] $ensure = 'present',
 ) {
-  # Validate our arrays
-  validate_array($ipaddress)
-  validate_array($netmask)
-
-  if $gateway {
-    validate_array($gateway)
-  }
-
-  if $metric {
-    validate_array($metric)
-  }
-
-  if $mtu {
-    validate_integer($mtu)
-  }
-
-  if $scope {
-    validate_array($scope)
-  }
-
-  if $source {
-    validate_array($source)
-  }
-
-  if $table {
-    validate_array($table)
-  }
-
   if $cidr {
-    validate_array($cidr)
     $_cidr = $cidr
   } else {
     $_cidr = build_cidr_array($netmask)
   }
 
-  if $family {
-    validate_array($family)
-  }
+  include network
 
-  include ::network
-
-  case $::osfamily {
+  case $facts['os']['family'] {
     'RedHat': {
       file { "route-${name}":
         ensure  => $ensure,
@@ -209,6 +176,6 @@ define network::route (
         notify  => $network::manage_config_file_notify,
       }
     }
-    default: { fail('Operating system not supported')  }
+    default: { fail('Operating system not supported') }
   }
 } # define network::route

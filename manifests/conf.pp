@@ -72,17 +72,17 @@
 #
 define network::conf (
 
-  Optional[String] $source       = undef,
-  Optional[String] $template     = undef,
-  Optional[String] $content      = undef,
+  Optional[String] $source = undef,
+  Optional[String] $template = undef,
+  Optional[String] $content = undef,
 
-  Optional[String] $path         = undef,
-  Optional[Stdlib::Filemode] $mode         = undef,
-  Optional[String] $owner        = undef,
-  Optional[String] $group        = undef,
+  Optional[String] $path = undef,
+  Optional[Stdlib::Filemode] $mode = undef,
+  Optional[String] $owner = undef,
+  Optional[String] $group = undef,
 
   Variant[String,Boolean] $config_file_notify  = 'class_default',
-  Variant[String,Boolean] $config_file_require = undef,
+  Optional[Variant[String,Boolean]] $config_file_require = undef,
 
   Optional[Hash] $options_hash = undef,
 

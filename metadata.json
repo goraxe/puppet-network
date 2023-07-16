@@ -1,6 +1,6 @@
 {
   "name": "c2devel-network",
-  "version": "3.5.4",
+  "version": "3.5.5",
   "author": "Alessandro Franceschi",
   "summary": "Fork of deprecated Example42 Network Module",
   "license": "Apache-2.0",
@@ -9,7 +9,7 @@
   "dependencies": [
     {
       "name": "puppetlabs/stdlib",
-      "version_requirement": ">= 2.0.1 <7.0.0"
+      "version_requirement": ">= 2.0.1 <=9.2.0"
     },
     {
       "name": "puppetlabs/concat",
@@ -100,7 +100,7 @@
   "requirements": [
     {
       "name": "puppet",
-      "version_requirement": ">= 3.0.0 <7.0.0"
+      "version_requirement": ">= 4.0.0 <8.0.0"
     }
   ]
 }

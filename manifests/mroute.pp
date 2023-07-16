@@ -59,41 +59,38 @@
 # Deploys the file /etc/sysconfig/network/ifroute-$name.
 #
 define network::mroute (
-  $routes,
-  $interface           = $name,
-  $config_file_notify  = 'class_default',
-  $ensure              = 'present',
-  $route_up_template   = undef,
-  $route_down_template = undef,
-  $table               = undef,
+  Hash $routes,
+  String $interface           = $name,
+  String $config_file_notify  = 'class_default',
+  Enum['absent','present'] $ensure = 'present',
+  Optional[String] $route_up_template   = undef,
+  Optional[String] $route_down_template = undef,
+  Optional[String] $table               = undef,
 ) {
-  # Validate our arrays
-  validate_hash($routes)
-
-  include ::network
+  include network
 
   $real_config_file_notify = $config_file_notify ? {
-    'class_default' => $::network::manage_config_file_notify,
+    'class_default' => $network::manage_config_file_notify,
     default         => $config_file_notify,
   }
 
   $real_route_up_template = $route_up_template ? {
-    undef   => $::osfamily ? {
+    undef   => $facts['os']['family'] ? {
       'RedHat' => 'network/mroute-RedHat.erb',
       'Debian' => 'network/mroute_up-Debian.erb',
       'SuSE'   => 'network/mroute-SuSE.erb',
     },
-    default =>  $route_up_template,
+    default => $route_up_template,
   }
   $real_route_down_template = $route_down_template ? {
-    undef   => $::osfamily ? {
+    undef   => $facts['os']['family'] ? {
       'Debian' => 'network/mroute_down-Debian.erb',
       default  => undef,
     },
-    default =>  $route_down_template,
+    default => $route_down_template,
   }
 
-  if $::osfamily == 'SuSE' {
+  if $facts['os']['family'] == 'SuSE' {
     $networks = keys($routes)
     network::mroute::validate_gw { $networks:
       routes => $routes,
@@ -101,13 +98,13 @@ define network::mroute (
   }
 
   # TODO: add support for other distros
-  if $::osfamily != 'RedHat' and $table {
-    notify {"table parameter in mroute has no effect on ${::osfamily}!":
+  if $facts['os']['family'] != 'RedHat' and $table {
+    notify { "table parameter in mroute has no effect on ${facts['os']['family']}!":
       loglevel => warning,
     }
   }
 
-  case $::osfamily {
+  case $facts['os']['family'] {
     'RedHat': {
       file { "route-${name}":
         ensure  => $ensure,
@@ -150,6 +147,6 @@ define network::mroute (
         notify  => $real_config_file_notify,
       }
     }
-    default: { fail('Operating system not supported')  }
+    default: { fail('Operating system not supported') }
   }
 }

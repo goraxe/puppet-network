@@ -78,62 +78,61 @@
 #
 class network (
 
-  $hostname                  = undef,
+  Optional[String] $hostname                  = undef,
 
-  $interfaces_hash           = undef,
-  $default_interfaces_hash   = {},
-  $routes_hash               = undef,
-  $mroutes_hash              = undef,
-  $rules_hash                = undef,
-  $tables_hash               = undef,
-  $confs_hash                = undef,
+  Optional[Hash] $interfaces_hash           = undef,
+  Optional[Hash] $default_interfaces_hash   = undef,
+  Optional[Hash] $routes_hash               = undef,
+  Optional[Hash] $mroutes_hash              = undef,
+  Optional[Hash] $rules_hash                = undef,
+  Optional[Hash] $tables_hash               = undef,
+  Optional[Hash] $confs_hash                = undef,
 
-  $hostname_file_template   = "network/hostname-${::osfamily}.erb",
+  String $hostname_file_template   = "network/hostname-${facts['os']['family']}.erb",
 
   # Parameter used only on RedHat family
-  $gateway                   = undef,
-  $nozeroconf                = undef,
-  $ipv6enable                = undef,
+  Optional[Stdlib::IP::Address] $gateway                   = undef,
+  Optional[Enum['yes','no']] $nozeroconf                = undef,
+  Optional[Enum['yes','no']] $ipv6enable                = undef,
 
   # Stdmod commons
-  $package_name              = $::network::params::package_name,
-  $package_ensure            = 'present',
+  String $package_name              = $network::params::package_name,
+  Enum['absent','present'] $package_ensure            = 'present',
 
-  $service_restart_exec      = $::network::params::service_restart_exec,
+  String $service_restart_exec      = $network::params::service_restart_exec,
 
-  $config_file_path          = $::network::params::config_file_path,
-  $config_file_require       = undef,
-  $config_file_notify        = 'class_default',
-  $config_file_source        = undef,
-  $config_file_template      = undef,
-  $config_file_content       = undef,
-  $config_file_options_hash  = { } ,
+  String $config_file_path          = $network::params::config_file_path,
+  Optional[String] $config_file_require       = undef,
+  String $config_file_notify        = 'class_default',
+  Optional[String] $config_file_source        = undef,
+  Optional[String] $config_file_template      = undef,
+  Optional[String] $config_file_content       = undef,
+  Optional[Hash] $config_file_options_hash  = undef,
 
-  $config_file_per_interface = false,
+  Boolean $config_file_per_interface = false,
 
-  $config_dir_path           = $::network::params::config_dir_path,
-  $config_dir_source         = undef,
-  $config_dir_purge          = false,
-  $config_dir_recurse        = true,
+  String $config_dir_path           = $network::params::config_dir_path,
+  Optional[String] $config_dir_source         = undef,
+  Boolean $config_dir_purge          = false,
+  Boolean $config_dir_recurse        = true,
 
-  $dependency_class          = undef,
-  $my_class                  = undef,
+  Optional[String] $dependency_class          = undef,
+  Optional[String] $my_class                  = undef,
 
-  $monitor_class             = undef,
-  $monitor_options_hash      = { } ,
+  Optional[String] $monitor_class             = undef,
+  Optional[Hash] $monitor_options_hash      = undef,
 
-  $firewall_class            = undef,
-  $firewall_options_hash     = { } ,
+  Optional[String] $firewall_class            = undef,
+  Optional[Hash] $firewall_options_hash     = undef,
 
-  $scope_hash_filter         = '(uptime.*|timestamp)',
+  String $scope_hash_filter         = '(uptime.*|timestamp)',
 
-  $tcp_port                  = undef,
-  $udp_port                  = undef,
+  Optional[Integer] $tcp_port                  = undef,
+  Optional[Integer] $udp_port                  = undef,
 
-  $hiera_merge               = false,
+  Boolean $hiera_merge               = false,
 
-  ) inherits ::network::params {
-
+) inherits network::params {
   # Hiera import
 
   if( $hiera_merge == true ) {
@@ -179,12 +178,11 @@ class network (
     $real_confs_hash      = $confs_hash
   }
 
-
   # Class variables validation and management
 
-  $config_file_owner          = $::network::params::config_file_owner
-  $config_file_group          = $::network::params::config_file_group
-  $config_file_mode           = $::network::params::config_file_mode
+  $config_file_owner          = $network::params::config_file_owner
+  $config_file_group          = $network::params::config_file_group
+  $config_file_mode           = $network::params::config_file_mode
 
   $manage_config_file_content = $config_file_content ? {
     undef => $config_file_template ? {
@@ -214,7 +212,7 @@ class network (
     default         => $config_file_require,
   }
 
-  $manage_hostname = pick($hostname, $::fqdn)
+  $manage_hostname = pick($hostname, $facts['networking']['fqdn'])
 
   if $package_ensure == 'absent' {
     $config_dir_ensure = absent
@@ -224,13 +222,11 @@ class network (
     $config_file_ensure = present
   }
 
-
   # Dependency class
 
   if $dependency_class {
     include $dependency_class
   }
-
 
   # Resources managed
 
@@ -309,9 +305,9 @@ class network (
     create_resources('network::conf', $real_confs_hash)
   }
   # Configure default gateway (On RedHat). Also hostname is set.
-  if $::osfamily == 'RedHat'
-  and ($::network::gateway
-  or $::network::hostname) {
+  if $facts['os']['family'] == 'RedHat'
+  and ($network::gateway
+  or $network::hostname) {
     file { '/etc/sysconfig/network':
       ensure  => $config_file_ensure,
       mode    => $config_file_mode,
@@ -320,7 +316,7 @@ class network (
       content => template($network::hostname_file_template),
       notify  => $network::manage_config_file_notify,
     }
-    case $::lsbmajdistrelease {
+    case $facts['os']['release']['major'] {
       '7','8': {
         exec { 'sethostname':
           command => "/usr/bin/hostnamectl set-hostname ${manage_hostname}",
@@ -332,7 +328,7 @@ class network (
   }
 
   # Configure hostname (On Debian)
-  if $::osfamily == 'Debian'
+  if $facts['os']['family'] == 'Debian'
   and $hostname {
     file { '/etc/hostname':
       ensure  => $config_file_ensure,
@@ -344,7 +340,7 @@ class network (
     }
   }
 
-  if $::osfamily == 'Suse' {
+  if $facts['os']['family'] == 'Suse' {
     if $hostname {
       file { '/etc/HOSTNAME':
         ensure  => $config_file_ensure,
@@ -361,7 +357,7 @@ class network (
     }
   }
 
-  if $::osfamily == 'Solaris' {
+  if $facts['os']['family'] == 'Solaris' {
     if $hostname {
       file { '/etc/nodename':
         ensure  => $config_file_ensure,
@@ -377,7 +373,6 @@ class network (
       }
     }
   }
-
 
   # Extra classes
 
@@ -398,5 +393,4 @@ class network (
       scope_hash   => {},
     }
   }
-
 }

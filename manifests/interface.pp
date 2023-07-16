@@ -483,7 +483,7 @@ define network::interface (
   Optional[String] $etherdevice = undef,
   # also used for Suse vlan: $vlan
 ) {
-  include ::network
+  include network
 
   if $facts['os']['family'] != 'RedHat' and ($type == 'InfiniBand' or $connected_mode) {
     fail('InfiniBand parameters are supported only for RedHat family.')
