@@ -271,7 +271,7 @@ define network::interface (
   Optional[Stdlib::IP::Address] $broadcast = undef,
   Optional[Stdlib::IP::Address] $gateway = undef,
   Optional[Stdlib::MAC] $hwaddr = undef,
-  Optional[Integer] $mtu = undef,
+  Optional[Variant[String,Integer]] $mtu = undef,
 
   Optional[String] $description = undef,
 
