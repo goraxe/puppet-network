@@ -39,12 +39,7 @@
 #   - Second level: Interface options (check network::interface for the
 #     available options)
 #   If an hash is provided here, network::interface defines are declared with:
-#   create_resources("network::interface", $interfaces_hash, $default_interfaces_hash)
-#
-# [*default_interfaces_hash*]
-#   Hash. Default {}.
-#   Values applied to all interfaces, if they don't specify a more specific value
-#   themselves.
+#   create_resources("network::interface", $interfaces_hash)
 #
 # [*routes_hash*]
 #   Hash. Default undef.
@@ -81,7 +76,6 @@ class network (
   Optional[String] $hostname                  = undef,
 
   Optional[Hash] $interfaces_hash           = undef,
-  Optional[Hash] $default_interfaces_hash   = undef,
   Optional[Hash] $routes_hash               = undef,
   Optional[Hash] $mroutes_hash              = undef,
   Optional[Hash] $rules_hash                = undef,
@@ -96,12 +90,12 @@ class network (
   Optional[Enum['yes','no']] $ipv6enable                = undef,
 
   # Stdmod commons
-  String $package_name              = $network::params::package_name,
+  String $package_name,
   Enum['absent','present'] $package_ensure            = 'present',
 
-  String $service_restart_exec      = $network::params::service_restart_exec,
+  String $service_restart_exec,
 
-  String $config_file_path          = $network::params::config_file_path,
+  String $config_file_path,
   Optional[String] $config_file_require       = undef,
   String $config_file_notify        = 'class_default',
   Optional[String] $config_file_source        = undef,
@@ -111,7 +105,7 @@ class network (
 
   Boolean $config_file_per_interface = false,
 
-  String $config_dir_path           = $network::params::config_dir_path,
+  String $config_dir_path,
   Optional[String] $config_dir_source         = undef,
   Boolean $config_dir_purge          = false,
   Boolean $config_dir_recurse        = true,
@@ -132,7 +126,13 @@ class network (
 
   Boolean $hiera_merge               = false,
 
-) inherits network::params {
+) {
+  case $facts['os']['family'] {
+    'Debian','RedHat','Amazon','Suse', 'Solaris': {}
+    default: {
+      fail("${facts['os']['name']} not supported.")
+    }
+  }
   # Hiera import
 
   if( $hiera_merge == true ) {
@@ -179,10 +179,6 @@ class network (
   }
 
   # Class variables validation and management
-
-  $config_file_owner          = $network::params::config_file_owner
-  $config_file_group          = $network::params::config_file_group
-  $config_file_mode           = $network::params::config_file_mode
 
   $manage_config_file_content = $config_file_content ? {
     undef => $config_file_template ? {
@@ -282,7 +278,7 @@ class network (
   # Create network interfaces from interfaces_hash, if present
 
   if $real_interfaces_hash {
-    create_resources('network::interface', $real_interfaces_hash, $default_interfaces_hash)
+    create_resources('network::interface', $real_interfaces_hash)
   }
 
   if $real_routes_hash {

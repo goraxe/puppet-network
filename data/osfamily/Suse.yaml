@@ -1,0 +1,8 @@
+---
+network::service_restart_exec: 'service network restart'
+network::config_file_path: '/etc/sysconfig/network/ifcfg-eth0'
+network::config_file_mode: '0644'
+network::config_file_owner: 'root'
+network::config_file_group: 'root'
+network::config_dir_path: '/etc/sysconfig/network'
+network::package_name: 'network'

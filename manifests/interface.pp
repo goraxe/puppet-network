@@ -265,7 +265,7 @@ define network::interface (
 
   Boolean $enable_dhcp = false,
 
-  Stdlib::IP::Address $ipaddress = '',
+  Optional[Stdlib::IP::Address] $ipaddress = undef,
   Optional[Stdlib::IP::Address] $netmask = undef,
   Optional[Stdlib::IP::Address] $network = undef,
   Optional[Stdlib::IP::Address] $broadcast = undef,
@@ -279,10 +279,10 @@ define network::interface (
   String $manage_order = '10',
   Boolean $auto = true,
   Optional[Boolean] $allow_hotplug = undef,
-  String $method,
+  Optional[String] $method = undef,
   String $family = 'inet',
   String $stanza = 'iface',
-  Stdlib::IP::Address $address = '',
+  Optional[Stdlib::IP::Address] $address = undef,
   Optional[String] $dns_search = undef,
   Optional[String] $dns_nameservers = undef,
   # For method: static
@@ -381,11 +381,11 @@ define network::interface (
   Optional[String] $wpa_ap_scan = undef,
 
   ## RedHat specific
-  Stdlib::IP::Address $ipaddr,
+  Optional[Stdlib::IP::Address] $ipaddr = undef,
   Optional[Integer] $prefix = undef,
   Optional[String] $uuid = undef,
-  String $bootproto,
-  String[Enum['yes','no']] $userctl = 'no',
+  Optional[String] $bootproto = undef,
+  Enum['yes','no'] $userctl = 'no',
   String $type = 'Ethernet',
   Optional[String] $ethtool_opts = undef,
   Optional[String] $ipv6init = undef,
@@ -397,9 +397,9 @@ define network::interface (
   Optional[Stdlib::IP::Address] $ipv6_defaultgw = undef,
   Optional[String] $dhcp_hostname = undef,
   Optional[Stdlib::IP::Address] $srcaddr = undef,
-  String $peerdns,
-  String $peerntp,
-  String $onboot,
+  Enum['yes','no'] $onboot = 'yes',
+  Enum['yes','no'] $peerdns = 'no',
+  Enum['yes','no'] $peerntp = 'no',
   Optional[String] $onparent = undef,
   Optional[String] $defroute = undef,
   Optional[Stdlib::IP::Address] $dns1 = undef,
@@ -455,12 +455,12 @@ define network::interface (
   # RedHat specific for zLinux
   Optional[Array[String]] $subchannels = undef,
   Optional[Enum['qeth','lcs','ctc']] $nettype = undef,
-  Optional[Enum[0,1]] $layer2 = undef,
+  Optional[Enum['0','1']] $layer2 = undef,
   Optional[String] $zlinux_options = undef,
 
   ## Suse specific
-  String $startmode,
-  String $usercontrol = 'no',
+  Enum['auto','off'] $startmode = 'off',
+  Enum['yes','no']  $usercontrol = 'no',
   Optional[String] $firewall = undef,
   Optional[String] $aliases = undef,
   Optional[Stdlib::IP::Address] $remote_ipaddr = undef,

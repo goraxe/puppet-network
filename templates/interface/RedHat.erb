@@ -103,7 +103,7 @@ IPV6_ADDR_GEN_MODE="<%= @ipv6_addr_gen_mode %>"
 <% if @ipv6addr -%>
 IPV6ADDR="<%= @ipv6addr %>"
 <% end -%>
-<% unless @ipv6addr_secondaries.empty? -%>
+<% if @ipv6addr_secondaries -%>
 IPV6ADDR_SECONDARIES="<%= @ipv6addr_secondaries.sort.join(' ') %>"
 <% end -%>
 <% if @ipv6_defaultgw -%>
