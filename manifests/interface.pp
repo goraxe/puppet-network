@@ -539,7 +539,7 @@ define network::interface (
   }
 
   $manage_bootproto = $bootproto ? {
-    ''     => $enable_dhcp ? {
+    undef     => $enable_dhcp ? {
       true  => 'dhcp',
       false => $bootproto_false
     },
