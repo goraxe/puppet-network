@@ -323,19 +323,19 @@ define network::interface (
   Optional[Variant[Array[String],String]] $additional_networks = undef,
 
   # Common ifupdown scripts
-  Optional[Array[String]] $up = undef,
-  Optional[Array[String]] $pre_up = undef,
-  Optional[Array[String]] $post_up = undef,
-  Optional[Array[String]] $down = undef,
-  Optional[Array[String]] $pre_down = undef,
-  Optional[Array[String]] $post_down = undef,
+  Optional[Array[String]] $up = [],
+  Optional[Array[String]] $pre_up = [],
+  Optional[Array[String]] $post_up = [],
+  Optional[Array[String]] $down = [],
+  Optional[Array[String]] $pre_down = [],
+  Optional[Array[String]] $post_down = [],
 
   # For virtual routing and forwarding (VRF)
   Optional[String] $vrf = undef,
   Optional[String] $vrf_table = undef,
 
   # For bonding
-  Optional[Array[String]] $slaves = undef,
+  Optional[Array[String]] $slaves = [],
   Optional[String] $bond_mode = undef,
   Optional[String] $bond_miimon = undef,
   Optional[String] $bond_downdelay = undef,
@@ -343,7 +343,7 @@ define network::interface (
   Optional[String] $bond_lacp_rate = undef,
   Optional[String] $bond_master = undef,
   Optional[String] $bond_primary = undef,
-  Optional[Array[String]] $bond_slaves = undef,
+  Optional[Array[String]] $bond_slaves = [],
   Optional[String] $bond_xmit_hash_policy = undef,
   Optional[String] $bond_num_grat_arp = undef,
   Optional[String] $bond_arp_all = undef,
@@ -360,7 +360,7 @@ define network::interface (
   Optional[String] $team_master = undef,
 
   # For bridging
-  Optional[Array[String]] $bridge_ports = undef,
+  Optional[Array[String]] $bridge_ports = [],
   Optional[String] $bridge_stp = undef,
   Optional[String] $bridge_fd = undef,
   Optional[String] $bridge_maxwait = undef,
@@ -370,11 +370,11 @@ define network::interface (
   Optional[String] $wpa_ssid = undef,
   Optional[String] $wpa_bssid = undef,
   Optional[String] $wpa_psk = undef,
-  Optional[Array[String]] $wpa_key_mgmt = undef,
-  Optional[Array[String]] $wpa_group = undef,
-  Optional[Array[String]] $wpa_pairwise = undef,
-  Optional[Array[String]] $wpa_auth_alg = undef,
-  Optional[Array[String]] $wpa_proto = undef,
+  Optional[Array[String]] $wpa_key_mgmt = [],
+  Optional[Array[String]] $wpa_group = [],
+  Optional[Array[String]] $wpa_pairwise = [],
+  Optional[Array[String]] $wpa_auth_alg = [],
+  Optional[Array[String]] $wpa_proto = [],
   Optional[String] $wpa_identity = undef,
   Optional[String] $wpa_password = undef,
   Optional[String] $wpa_scan_ssid = undef,
@@ -393,7 +393,7 @@ define network::interface (
   Optional[String] $ipv6_privacy = undef,
   Optional[String] $ipv6_addr_gen_mode = undef,
   Optional[String] $ipv6addr = undef,
-  Optional[Array[Stdlib::IP::Address]] $ipv6addr_secondaries = undef,
+  Optional[Array[Stdlib::IP::Address]] $ipv6addr_secondaries = [],
   Optional[Stdlib::IP::Address] $ipv6_defaultgw = undef,
   Optional[String] $dhcp_hostname = undef,
   Optional[Stdlib::IP::Address] $srcaddr = undef,
@@ -453,7 +453,7 @@ define network::interface (
   Optional[String] $ovsbootproto = undef,
 
   # RedHat specific for zLinux
-  Optional[Array[String]] $subchannels = undef,
+  Optional[Array[String]] $subchannels = [],
   Optional[Enum['qeth','lcs','ctc']] $nettype = undef,
   Optional[Enum['0','1']] $layer2 = undef,
   Optional[String] $zlinux_options = undef,
